@@ -1,0 +1,51 @@
+version: '3.4'
+
+services:
+  edwardhsulab.daprdemo:
+    image: ${DOCKER_REGISTRY-}edwardhsulabdaprdemo
+    depends_on: 
+      - kafka
+      - placement
+    build:
+      context: .
+      dockerfile: EdwardHsuLab.DaprDemo/Dockerfile
+    networks: 
+      - dapr-system
+  daprdemoapp-sidecar:
+    image: "daprio/daprd:edge"
+    command: ["./daprd",
+    "-app-id", "daprdemoapp",
+    "-app-protocol", "http",
+    "-app-port", "80",
+    "-placement-host-address", "placement:50006",
+    "-components-path", "/components"]
+    volumes:
+      - "./components/:/components"
+    depends_on:
+      - edwardhsulab.daprdemo
+    network_mode: "service:edwardhsulab.daprdemo"
+  ############################
+  # Component service
+  ############################
+  kafka:
+    image: docker.vectorized.io/vectorized/redpanda:v21.7.6
+    command: ["redpanda", "start",
+        "--kafka-addr", "PLAINTEXT://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092",
+        "--advertise-kafka-addr", "PLAINTEXT://kafka:29092,OUTSIDE://kafka:9092"]
+    ports:
+      - 9092:9092
+      - 29092:29092
+    networks: 
+      - dapr-system
+  ############################
+  # Dapr placement service
+  ############################
+  placement:
+    image: "daprio/dapr"
+    command: ["./placement", "-port", "50006"]
+    ports:
+      - "50006:50006"
+    networks:
+      - dapr-system
+networks:
+  dapr-system:
