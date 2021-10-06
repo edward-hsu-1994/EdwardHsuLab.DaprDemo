@@ -37,6 +37,12 @@ services:
       - 29092:29092
     networks: 
       - dapr-system
+  redis:
+    image: redis
+    ports: 
+      - 16379:6379
+    networks:
+      - dapr-system
   ############################
   # Dapr placement service
   ############################

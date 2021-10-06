@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapr;
@@ -27,26 +28,24 @@ namespace EdwardHsuLab.DaprDemo.Controllers
         }
 
         [HttpGet("/dapr/subscribe")]
+        [Description("訂閱Topic資訊")]
         public async Task<IActionResult> Subscribe()
-        { 
+        {
+            // Programmatically subscribe
+            // https://docs.dapr.io/developing-applications/building-blocks/pubsub/howto-publish-subscribe/#programmatic-subscriptions
             return Json(
                 new[]
                 {
                     new {
                         pubsubname = "kafka-pubsub",
                         topic      = "test1",
-                        route      = "/api/PubSubDemo/received"
+                        route      = "/api/PubSubDemo/event"
                     }
                 });
         }
 
-        [HttpPost("received")]
-        public async Task<IActionResult> ReceivedCloudEvent(CloudEvent e)
-        {
-            return Ok();
-        }
-
         [HttpGet("fire-event")]
+        [Description("發送Event")]
         public async Task<IActionResult> FireEvent(string msg)
         {
             await _client.PublishEventAsync(
@@ -57,5 +56,22 @@ namespace EdwardHsuLab.DaprDemo.Controllers
 
             return Ok();
         }
+
+        [HttpPost("event")]
+        [Description("Event接收")] 
+        public async Task<IActionResult> ReceivedCloudEvent(CloudEvent e)
+        {
+            await _client.SaveStateAsync("redis-state", "recEvent", e.Data);
+            return Ok();
+        }
+
+        [HttpGet("received")]
+        [Description("取得最後收到的Event內容")]
+        public async Task<IActionResult> GetReceivedData()
+        {
+            return Json(await _client.GetStateAsync<object>("redis-state", "recEvent"));
+        }
+
+        
     }
 }

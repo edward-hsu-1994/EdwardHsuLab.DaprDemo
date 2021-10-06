@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="components\pub-sub.yaml" />
+    <None Include="components\statue-store.yaml" />
     <None Include="docker-compose.override.yml">
       <DependentUpon>docker-compose.yml</DependentUpon>
     </None>
