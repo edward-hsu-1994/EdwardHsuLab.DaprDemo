@@ -45,7 +45,10 @@ namespace EdwardHsuLab.DaprDemo.Controllers
                 return retryTime;
             }
 
-            await _client.SaveStateAsync("redis-state", name, retryTime);
+            await _client.SaveStateAsync("redis-state", name, retryTime, null, new Dictionary<string, string>()
+            {
+                ["ttlInSeconds"] = "10"
+            });
 
             // force disconnection
             this.HttpContext.Abort();

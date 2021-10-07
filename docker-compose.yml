@@ -18,7 +18,8 @@ services:
     "-app-protocol", "http",
     "-app-port", "80",
     "-placement-host-address", "placement:50006",
-    "-components-path", "/components"]
+    "-components-path", "/components",
+    "-config", "/components/tracing.yaml"]
     volumes:
       - "./components/:/components"
     depends_on:
@@ -51,6 +52,15 @@ services:
     command: ["./placement", "-port", "50006"]
     ports:
       - "50006:50006"
+    networks:
+      - dapr-system
+  jaeger:
+    image: jaegertracing/all-in-one:1.22
+    environment:
+      - "COLLECTOR_ZIPKIN_HOST_PORT=:9412"
+    ports:
+      - "16686:16686"
+      - "9412:9412"
     networks:
       - dapr-system
 networks:

@@ -9,6 +9,7 @@
     <DockerServiceName>edwardhsulab.daprdemo</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="components\tracing.yaml" />
     <None Include="components\pub-sub.yaml" />
     <None Include="components\statue-store.yaml" />
     <None Include="docker-compose.override.yml">
