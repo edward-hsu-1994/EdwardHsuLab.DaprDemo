@@ -29,7 +29,7 @@ services:
   # Component service
   ############################
   kafka:
-    image: docker.vectorized.io/vectorized/redpanda:v21.7.6
+    image: docker.vectorized.io/vectorized/redpanda:v21.9.6
     command: ["redpanda", "start",
         "--kafka-addr", "PLAINTEXT://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092",
         "--advertise-kafka-addr", "PLAINTEXT://kafka:29092,OUTSIDE://kafka:9092"]
